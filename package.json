@@ -1,0 +1,25 @@
+{
+  "name": "mbys-token-sale",
+  "version": "1.0.0",
+  "description": "mbys token sale",
+  "main": "truffle.js",
+  "scripts": {
+    "compile": "truffle compile",
+    "test": "./scripts/test.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mbys/dummyrepo.git"
+  },
+  "author": "",
+  "license": "All rights reserved by MBYS LLC.",
+  "homepage": "https://github.com/mbys/dummyrepo#readme",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "chai-bignumber": "^2.0.1",
+    "truffle": "4.0.5",
+    "ganache-cli": "beta",
+    "zeppelin-solidity": "1.5.0"
+  }
+}
