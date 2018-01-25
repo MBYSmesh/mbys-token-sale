@@ -10,7 +10,6 @@ contract MBYSToken is MintableToken {
 
     bool public saleOver = false;
 
-    // set owner besides crowdsale contract
     function MBYSToken() public {
     }
 
@@ -20,7 +19,7 @@ contract MBYSToken is MintableToken {
     }
 
     /**
-     * @dev returns all user's tokens if time >= releaseTime
+     * @dev returns all user's tokens after sale is over, 0 otherwise
      */
     function transferableTokens(address holder, uint64) public constant returns (uint256) {
         if (saleOver)

@@ -9,6 +9,7 @@ contract MBYSCrowdsale is CappedCrowdsale, FinalizableCrowdsale {
     using SafeMath for uint256;
 
     uint256 public saleCap = 70000 ether;
+    // controller is assigned ownership of token contract after sale concludes
     address public controller;
 
     function MBYSCrowdsale(uint256 _startTime, uint256 _endTime, address _wallet, address _controller) public
@@ -24,10 +25,6 @@ contract MBYSCrowdsale is CappedCrowdsale, FinalizableCrowdsale {
 
     // sell 1000 nominal tokens per eth (1000 * 10 ^ 18)?
     // total number of tokens:
-
-    // there was a mention of 3-month vesting period for the token "after some sort
-    // of interaction with the platform" -- figure out what this means and
-    // whether it needs to be build
 
     // Sale bonus structure
     // 0 - 5000, 40%
