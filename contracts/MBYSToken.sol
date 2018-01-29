@@ -1,8 +1,9 @@
 pragma solidity 0.4.18;
 
 import 'zeppelin-solidity/contracts/token/MintableToken.sol';
+import './LimitedTransferToken.sol';
 
-contract MBYSToken is MintableToken {
+contract MBYSToken is MintableToken, LimitedTransferToken {
 
     string public name = "MBYS TOKEN";
     string public symbol = "MBYS";

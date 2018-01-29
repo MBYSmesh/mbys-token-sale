@@ -30,6 +30,11 @@ contract('MBYSCrowdsale', function([owner, controller, user1, user2]) {
             await help.increaseTimeTo(this.startTime + help.duration.hours(1));
         }
 
+        this.setTimeToPostSalePeriod = async function() {
+            await help.increaseTimeTo(this.afterEndTime);
+        }
+
+
         // deploy contracts
         this.crowdsale = await MBYSCrowdsale.new(this.startTime, this.endTime, controller, controller, {from: owner});
         this.token  = MBYSToken.at(await this.crowdsale.token());
@@ -63,25 +68,28 @@ contract('MBYSCrowdsale', function([owner, controller, user1, user2]) {
 
     });
 
-    describe("Before start", function() {
+    describe("Before sale period", function() {
 
-            it("rejects payment before start", async function() {
+            it("Initial supply of zero tokens", async function() {
+            });
+
+            it("Rejects token buys before start of sale", async function() {
                 await this.crowdsale.buyTokens(user1, {from: user1, value: 1}).should.be.rejectedWith(help.EVMThrow);
             });
 
     });
 
 
-    describe("sale period", function() {
+    describe("Sale period", function() {
         beforeEach(async function() {
             await this.setTimeToSalePeriod();
         });
 
-        it("allows non-beneficiary to buy for beneficiary", async function() {
+        it("Allows non-beneficiary to buy for beneficiary", async function() {
             await this.crowdsale.buyTokens(user1, {from: user2, value: help.etherToWei(1)}).should.be.fulfilled;
         });
 
-        it("buy cap results in proper amount of tokens created", async function() {
+        it("Buy cap results in proper amount of tokens created", async function() {
             const weiRaised = web3.toBigNumber(await this.crowdsale.weiRaised());
             const cap = web3.toBigNumber(await this.crowdsale.cap());
             await this.crowdsale.buyTokens(user1, {from: user1, value: cap.sub(weiRaised)}).should.be.fulfilled;
@@ -95,6 +103,40 @@ contract('MBYSCrowdsale', function([owner, controller, user1, user2]) {
             totalSupply.should.be.bignumber.equal(help.etherToWei(75250000));
         });
 
+        it("Tokens are not transferable during sale", async function() {
+            await this.crowdsale.buyTokens(user1, {from: user1, value: help.etherToWei(10)}).should.be.fulfilled;
+            const transferableTokens = await this.token.transferableTokens(user1, 0);
+            transferableTokens.should.be.bignumber.equal(0);
+            // TODO actually transfer the token
+        });
+
+        it("Sale can end and tokens are transferable after weiCap is reached", async function() {
+
+        });
+
+        it("Sale can end and tokens are transferable after sale period is over", async function() {
+
+        });
+
     });
 
+    describe("After sale period", function() {
+
+        beforeEach(async function() {
+            await this.setTimeToSalePeriod();
+            const cap = web3.toBigNumber(await this.crowdsale.cap());
+            await this.crowdsale.buyTokens(user1, {from: user1, value: cap}).should.be.fulfilled;
+            await this.crowdsale.finalize({from: owner}).should.be.fulfilled;
+        });
+
+        it("Does not allow further buys after end of sale", async function() {
+            await this.crowdsale.buyTokens(user1, {from: user1, value: help.etherToWei(4000)}).should.be.rejectedWith(help.EVMThrow);
+        });
+
+
+        it("Controller can mint tokens to presale investors' wallets after sale ends", async function() {
+
+        });
+
+    });
 });
