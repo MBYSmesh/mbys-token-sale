@@ -8,7 +8,7 @@ trap cleanup EXIT
 
 echo "Running MBYS Crowdsale tests..."
 
-ganache-cli --port 8546 --accounts 6 --defaultBalanceEther 2000000000 > /dev/null &
+ganache-cli --port 8546 --accounts 9 --defaultBalanceEther 2000000000 > /dev/null &
 
 ganache_pid=$!
 echo "Started ganache, pid ${ganache_pid}"

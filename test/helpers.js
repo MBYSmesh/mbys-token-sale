@@ -48,7 +48,7 @@ exports.duration = {
     years:   function(val) { return val * this.days(365) }
 };
 
-exports.EVMThrow = 'VM Exception while processing transaction: revert';
+exports.EVMRevert = 'VM Exception while processing transaction: revert';
 
 exports.advanceBlock = function() {
     return new Promise((resolve, reject) => {

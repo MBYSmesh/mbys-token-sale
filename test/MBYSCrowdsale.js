@@ -19,7 +19,7 @@ const tiers = [
     { amountCap: help.etherToWei(70000), rate: web3.toBigNumber(1000) },
 ];
 
-contract('MBYSCrowdsale', function([owner, controller, user1, user2]) {
+contract('MBYSCrowdsale', function([owner, controller, user1, user2, investor1, investor2, outsider]) {
 
     beforeEach(async function() {
         this.startTime    = help.latestTime() + help.duration.weeks(1);
@@ -62,7 +62,7 @@ contract('MBYSCrowdsale', function([owner, controller, user1, user2]) {
             const r6 = await this.crowdsale.tierIndexByWeiAmount(tiers[3].amountCap, {from: user1}).should.be.fulfilled;
             r6.should.be.bignumber.equal(web3.toBigNumber(3));
 
-            await this.crowdsale.tierIndexByWeiAmount(tiers[3].amountCap.add(help.etherToWei(1)), {from: user1}).should.be.rejectedWith(help.EVMThrow);
+            await this.crowdsale.tierIndexByWeiAmount(tiers[3].amountCap.add(help.etherToWei(1)), {from: user1}).should.be.rejectedWith(help.EVMRevert);
         });
 
 
@@ -71,10 +71,11 @@ contract('MBYSCrowdsale', function([owner, controller, user1, user2]) {
     describe("Before sale period", function() {
 
             it("Initial supply of zero tokens", async function() {
+
             });
 
             it("Rejects token buys before start of sale", async function() {
-                await this.crowdsale.buyTokens(user1, {from: user1, value: 1}).should.be.rejectedWith(help.EVMThrow);
+                await this.crowdsale.buyTokens(user1, {from: user1, value: 1}).should.be.rejectedWith(help.EVMRevert);
             });
 
     });
@@ -94,7 +95,7 @@ contract('MBYSCrowdsale', function([owner, controller, user1, user2]) {
             const cap = web3.toBigNumber(await this.crowdsale.cap());
             await this.crowdsale.buyTokens(user1, {from: user1, value: cap.sub(weiRaised)}).should.be.fulfilled;
             const saleOver = await this.crowdsale.hasEnded({from: user1});
-            await this.token.endSale({from: owner}).should.be.rejectedWith(help.EVMThrow);
+            await this.token.endSale({from: owner}).should.be.rejectedWith(help.EVMRevert);
             await this.crowdsale.finalize({from: owner}).should.be.fulfilled;
             const transferableTokens = await this.token.transferableTokens(user1, 0);
             transferableTokens.should.be.bignumber.greaterThan(0);
@@ -130,12 +131,20 @@ contract('MBYSCrowdsale', function([owner, controller, user1, user2]) {
         });
 
         it("Does not allow further buys after end of sale", async function() {
-            await this.crowdsale.buyTokens(user1, {from: user1, value: help.etherToWei(4000)}).should.be.rejectedWith(help.EVMThrow);
+            await this.crowdsale.buyTokens(user1, {from: user1, value: help.etherToWei(4000)}).should.be.rejectedWith(help.EVMRevert);
         });
 
 
         it("Controller can mint tokens to presale investors' wallets after sale ends", async function() {
+            // mints 350000 nominal tokens to `investor1`'s token wallet
+            await this.token.mint(investor1, help.etherToWei(350000), {from: controller}).should.be.fulfilled;
+            // mints 50000 nominal tokens to `investor2`'s token wallet
+            await this.token.mint(investor2, help.etherToWei(50000), {from: controller}).should.be.fulfilled;
 
+            // owner fails to mint tokens
+            await this.token.mint(owner, help.etherToWei(50000), {from: owner}).should.be.rejectedWith(help.EVMRevert);
+            // outsider fails to mint tokens
+            await this.token.mint(outsider, help.etherToWei(50000), {from: outsider}).should.be.rejectedWith(help.EVMRevert);
         });
 
     });
