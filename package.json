@@ -5,7 +5,8 @@
   "main": "truffle.js",
   "scripts": {
     "compile": "truffle compile",
-    "test": "./scripts/test.sh"
+    "test": "./scripts/test.sh",
+    "localdeploy": "./scripts/local_deploy.sh"
   },
   "repository": {
     "type": "git",

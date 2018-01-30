@@ -39,6 +39,8 @@ npm run test
 
 ## Deployment guide
 
+Deployment gas consumption: 3135967
+
 ```
-npm run deploy
+npm run localdeploy
 ```
