@@ -116,17 +116,24 @@ contract('MBYSCrowdsale', function([owner, controller, user1, user2, investor1, 
             const transferableTokens = await this.token.transferableTokens(user1, 0);
             transferableTokens.should.be.bignumber.equal(0);
 
+
             // user1 fails to transfer his purchased tokens during the sale
             await this.token.transfer(user2, help.etherToWei(1), {from: user1}).should.be.rejectedWith(help.EVMRevert);
         });
 
         it("Sale can end and tokens are transferable after sale period is over", async function() {
+            await this.crowdsale.buyTokens(user1, {from: user1, value: help.etherToWei(10)}).should.be.fulfilled;
+
+            // time elapses and the sale ends
+            await this.setTimeToPostSalePeriod();
+            await this.crowdsale.finalize({from: owner}).should.be.fulfilled;
+
             // user1 has a transferable allowance equal to zero
             const transferableTokens = await this.token.transferableTokens(user1, 0);
-            transferableTokens.should.be.bignumber.equal(0);
+            transferableTokens.should.be.bignumber.gt(0);
 
             // user1 fails to transfer his purchased tokens during the sale
-            await this.token.transfer(user2, help.etherToWei(1)).should.be.rejectedWith(help.EVMRevert);
+            await this.token.transfer(user2, help.etherToWei(1), {from: user1}).should.be.fulfilled;
         });
 
     });

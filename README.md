@@ -44,3 +44,6 @@ Deployment gas consumption: 3135967
 ```
 npm run localdeploy
 ```
+
+The script run by the command above will `wait` until interrupted. This gives
+users the opportunity to interact with the contracts using ganache-cli on port 8545.
