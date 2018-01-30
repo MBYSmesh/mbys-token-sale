@@ -71,7 +71,8 @@ contract('MBYSCrowdsale', function([owner, controller, user1, user2, investor1, 
     describe("Before sale period", function() {
 
             it("Initial supply of zero tokens", async function() {
-
+                const initialSupply = web3.toBigNumber(await this.token.totalSupply());
+                initialSupply.should.be.bignumber.equal(0);
             });
 
             it("Rejects token buys before start of sale", async function() {
@@ -97,26 +98,35 @@ contract('MBYSCrowdsale', function([owner, controller, user1, user2, investor1, 
             const saleOver = await this.crowdsale.hasEnded({from: user1});
             await this.token.endSale({from: owner}).should.be.rejectedWith(help.EVMRevert);
             await this.crowdsale.finalize({from: owner}).should.be.fulfilled;
-            const transferableTokens = await this.token.transferableTokens(user1, 0);
-            transferableTokens.should.be.bignumber.greaterThan(0);
 
             const totalSupply = web3.toBigNumber((await this.token.totalSupply()).valueOf());
             totalSupply.should.be.bignumber.equal(help.etherToWei(75250000));
+
+            const transferableTokens = await this.token.transferableTokens(user1, 0);
+            transferableTokens.should.be.bignumber.equal(totalSupply);
+
+            // user1 can transfer his purchased tokens after the sale
+            await this.token.transfer(user2, help.etherToWei(1), {from: user1}).should.be.fulfilled;
         });
 
         it("Tokens are not transferable during sale", async function() {
             await this.crowdsale.buyTokens(user1, {from: user1, value: help.etherToWei(10)}).should.be.fulfilled;
+
+            // user1 has a transferable allowance equal to zero
             const transferableTokens = await this.token.transferableTokens(user1, 0);
             transferableTokens.should.be.bignumber.equal(0);
-            // TODO actually transfer the token
-        });
 
-        it("Sale can end and tokens are transferable after weiCap is reached", async function() {
-
+            // user1 fails to transfer his purchased tokens during the sale
+            await this.token.transfer(user2, help.etherToWei(1), {from: user1}).should.be.rejectedWith(help.EVMRevert);
         });
 
         it("Sale can end and tokens are transferable after sale period is over", async function() {
+            // user1 has a transferable allowance equal to zero
+            const transferableTokens = await this.token.transferableTokens(user1, 0);
+            transferableTokens.should.be.bignumber.equal(0);
 
+            // user1 fails to transfer his purchased tokens during the sale
+            await this.token.transfer(user2, help.etherToWei(1)).should.be.rejectedWith(help.EVMRevert);
         });
 
     });
