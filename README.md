@@ -47,3 +47,24 @@ npm run localdeploy
 
 The script run by the command above will `wait` until interrupted. This gives
 users the opportunity to interact with the contracts using ganache-cli on port 8545.
+
+### Operational steps
+
+1. Deploy the contract careful to configure properly the values for
+   `startTime`, `endTime`, `wallet` and `controller`. `wallet` will receive all
+   payments made over the course of the crowdsale. `controller` will be the
+   owner of the `MBYSToken` contract after the sale concludes and thus will
+   have the ability to continue minting tokens.
+
+2. Wait until the sale begins at `startTime`.
+
+3. Users can buy up to 70000 ether worth of `MBYSToken`s.
+
+4. Sale ends either due to the sale cap being reached or due to the sale period
+   expiring (at `endTime`).
+
+5. The owner must call `MBYSCrowdsale.finalize()` in order release the tokens
+   and to transfer `MBYSToken` ownership to `controller`.
+
+6. Use the `controller` account to credit presale investors' wallets with
+   MBYSTokens: `MBYSToken.mint(investorAddress, tokenAmountExpressedInWei, {from: controller})`.
