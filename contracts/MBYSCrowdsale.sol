@@ -23,7 +23,6 @@ contract MBYSCrowdsale is CappedCrowdsale, FinalizableCrowdsale {
       return new MBYSToken();
     }
 
-    // sell 1000 nominal tokens per eth (1000 * 10 ^ 18)?
     // total number of nominal tokens: 75,250,000 MBYS
 
     // Sale bonus structure

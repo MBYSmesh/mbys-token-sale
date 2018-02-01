@@ -174,7 +174,6 @@ contract('MBYSCrowdsale', function([owner, controller, user1, user2, investor1, 
             await this.crowdsale.buyTokens(user1, {from: user1, value: help.etherToWei(4000)}).should.be.rejectedWith(help.EVMRevert);
         });
 
-
         it("Controller can mint tokens to presale investors' wallets after sale ends", async function() {
             // mints 350000 nominal tokens to `investor1`'s token wallet
             await this.token.mint(investor1, help.etherToWei(350000), {from: controller}).should.be.fulfilled;
