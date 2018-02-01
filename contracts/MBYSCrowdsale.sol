@@ -24,7 +24,7 @@ contract MBYSCrowdsale is CappedCrowdsale, FinalizableCrowdsale {
     }
 
     // sell 1000 nominal tokens per eth (1000 * 10 ^ 18)?
-    // total number of tokens:
+    // total number of nominal tokens: 75,250,000 MBYS
 
     // Sale bonus structure
     // 0 - 5000, 40%
@@ -42,6 +42,9 @@ contract MBYSCrowdsale is CappedCrowdsale, FinalizableCrowdsale {
                                   , 1000
                                   ];
 
+    /**
+     * @dev Calculates the bonus tier given a particular level of weiRaised.
+     */
     function tierIndexByWeiAmount(uint256 weiLevel) public constant returns (uint256) {
         require(weiLevel <= saleCap);
         for (uint256 i = 0; i < tierAmountCaps.length; i++) {

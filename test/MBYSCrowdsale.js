@@ -74,6 +74,17 @@ contract('MBYSCrowdsale', function([owner, controller, user1, user2, investor1, 
             // 5000 * 1400 + 1000 * 1250 = 8250000
             const t1 = await this.crowdsale.calculateTokens(help.etherToWei(6000), 0, {from: user1}).should.be.fulfilled;
             t1.should.be.bignumber.equal(help.etherToWei(8250000));
+
+            // 15000 ether of MBYS already sold. Another 999 purchase should
+            // result in 999 * 1100 = 1098900 nominal MBYS tokens.
+            const t2 = await this.crowdsale.calculateTokens(help.etherToWei(999), help.etherToWei(15000), {from: user1}).should.be.fulfilled;
+            t2.should.be.bignumber.equal(help.etherToWei(1098900));
+
+            // 100 ether of MBYS already sold. Another 39999 purchase should
+            // result in 4900 * 1400 + 5000 * 1250 + 20000 * 1100 + 10099 * 1000
+            // = 45209000 nominal MBYS tokens.
+            const t3 = await this.crowdsale.calculateTokens(help.etherToWei(39999), help.etherToWei(100), {from: user1}).should.be.fulfilled;
+            t3.should.be.bignumber.equal(help.etherToWei(45209000));
         });
 
     });
@@ -99,6 +110,8 @@ contract('MBYSCrowdsale', function([owner, controller, user1, user2, investor1, 
 
         it("Allows non-beneficiary to buy for beneficiary", async function() {
             await this.crowdsale.buyTokens(user1, {from: user2, value: help.etherToWei(1)}).should.be.fulfilled;
+            const userBalance = await this.token.balanceOf(user1, {from: user1});
+            userBalance.should.be.bignumber.equal(help.etherToWei(1400));
         });
 
         it("Buy cap results in proper amount of tokens created", async function() {
