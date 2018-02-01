@@ -48,6 +48,9 @@ npm run localdeploy
 The script run by the command above will `wait` until interrupted. This gives
 users the opportunity to interact with the contracts using ganache-cli on port 8545.
 
+Public and Private keys for the accounts used will be displayed in the
+terminal output of ganache-cli.
+
 ### Operational steps
 
 1. Deploy the contract careful to configure properly the values for
