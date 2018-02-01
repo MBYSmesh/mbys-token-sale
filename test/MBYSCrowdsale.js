@@ -66,6 +66,16 @@ contract('MBYSCrowdsale', function([owner, controller, user1, user2, investor1, 
         });
 
 
+        it("calculateTokens produces the correct token amounts", async function() {
+            // 1 * 1400 = 1400
+            const t0 = await this.crowdsale.calculateTokens(help.etherToWei(1), 0, {from: user1}).should.be.fulfilled;
+            t0.should.be.bignumber.equal(help.etherToWei(1400));
+
+            // 5000 * 1400 + 1000 * 1250 = 8250000
+            const t1 = await this.crowdsale.calculateTokens(help.etherToWei(6000), 0, {from: user1}).should.be.fulfilled;
+            t1.should.be.bignumber.equal(help.etherToWei(8250000));
+        });
+
     });
 
     describe("Before sale period", function() {
